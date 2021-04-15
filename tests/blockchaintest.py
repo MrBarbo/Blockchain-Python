@@ -8,7 +8,7 @@ sys.path.append(root_folder)
 
 from codigo.blockchaincode  import Bloque
 from codigo.blockchaincode import BlockManager
-class ClassesTest(unittest.TestCase):
+class ClassTest(unittest.TestCase):
     #(django project standard)
     #Nombre de Tests: test_[Feature being tested]
 
@@ -21,17 +21,16 @@ class ClassesTest(unittest.TestCase):
         self.assertEqual(Test.archivo,"files1.txt")
 
     
-    #Test de la funcion hash
+    #Test de la funcion hashing
     def test_BlockHashFunctionWorks(self):
-        Test = Bloque("Buendia@hola.com","mot6","file4.py")
-        self.assertEqual(Test.hash,hash("Buendia@hola.commot6file4.py"))
+        Test = Bloque("Buendia@hola.com","mot6","file4.py")        
+        self.assertEqual("0a0465b3bfdf37de3952f3919462f0d888c5c52ddfe06c4492199f7be9379df5",Test.hash)
 
-    #Test de la funcion hash y creacion de la cadena
+    #Test de que dos bloques iguales tienen hash iguales y creacion de una cadena
     def test_HashFunctionAndBlockManagerWork(self):
-        cadenita = []
-        cadenita.append (Bloque("adios@gmail","mot2","files2.txt"))
-        Test = BlockManager(cadenita)
-        self.assertEqual(Test.cadena[0].hash, Bloque("adios@gmail","mot2","files2.txt").hash)
+        b1 = Bloque("hola@out.com","mot1","file1.rar")
+        b2 = Bloque("hola@out.com","mot1","file1.rar")       
+        self.assertEqual(b1.hash,b2.hash)
 
 
     #Test de la creacion del bloque genesis
@@ -39,21 +38,58 @@ class ClassesTest(unittest.TestCase):
         cadenita=[]
         Test = BlockManager(cadenita)
         Test.__crear_bloque_genesis__()
-        self.assertEqual(Test.cadena[0].hash, hash(""))
+        self.assertEqual(Test.get_block(0).hashing(""),Test.get_block(0).hash)
         
 
-    #Test de la funcion "AgregarBloque"    
+    #Test de la funcion "AgregarBloque", serializacion de bloques   
     def test_AgregarBloqueCreatesBlocks(self):
         cadenita = []
         Test = BlockManager(cadenita)
         Test.__crear_bloque_genesis__()
         b1 = Bloque("hola@out.com","mot1","file1.rar")
         b2 = Bloque("adios@out.com","mot3","file2.zip")
-        Test.__AgregarNuevo__(b1)
-        Test.__AgregarNuevo__(b2)
-        self.assertEqual(Test.cadena[1].hash, Test.cadena[2].hashant)
+        Test.agregar_nuevo(b1)
+        Test.agregar_nuevo(b2)
+        self.assertEqual(Test.get_block(1).hash, Test.get_block(2).hashant)
 
+    #Test de la busqueda por indice (get_block)
+    def test_IndexedSearchWorks(self):
+        cadenita = []
+        Test = BlockManager(cadenita)
+        Test.__crear_bloque_genesis__()
+        b1 = Bloque("buendia@in.com","mot65","file7.py")
+        b2 = Bloque("adios@out.com","mot3","file2.zip")
+        Test.agregar_nuevo(b1)
+        Test.agregar_nuevo(b2)
+        self.assertEqual(Test.get_block(2).email,"adios@out.com")
 
+    #Test de la busqueda por hash
+    def test_HashSearchWorks(self):
+        cadenita = []
+        Test = BlockManager(cadenita)
+        Test.__crear_bloque_genesis__()
+        b1 = Bloque("buendia@in.com","mot65","file7.py")
+        b2 = Bloque("buenastardes@jd.com","mot8","arch1.zip")
+        Test.agregar_nuevo(b1)
+        Test.agregar_nuevo(b2)
+        bt = Bloque("buendia@in.com","mot65","file7.py")
+        ht = bt.hash
+        self.assertEqual(Test.busqueda_hash(ht).hash,ht)
+
+    #Calculando hashes bloque por bloque verificamos la cadena
+    def test_ChainVerification(self):
+        cadenita = []
+        Test = BlockManager(cadenita)
+        Test.__crear_bloque_genesis__()
+        b1 = Bloque("buendia@in.com","mot65","file7.py")
+        b2 = Bloque("buenastardes@jd.com","mot8","arch1.zip")
+        b3 = Bloque("adios@uy.com", "mot20","arch4.mp3")
+        Test.agregar_nuevo(b1)
+        Test.agregar_nuevo(b2)
+        Test.agregar_nuevo(b3)
+        self.assertEqual(Test.get_block(1).hashant,Test.get_block(0).hash)
+        self.assertEqual(Test.get_block(2).hashant, Test.get_block(1).hash)
+        self.assertEqual(Test.get_block(3).hashant,Test.get_block(2).hash)
 
 if __name__ == "__main__":
     unittest.main()
