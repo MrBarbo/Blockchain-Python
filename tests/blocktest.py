@@ -14,15 +14,15 @@ class BlockTest(unittest.TestCase):
 
     #Test de la creacion de bloques
     def test_BlockClassCreatesABlock(self):
-        Test = Bloque("hola@gmail.com","mot1","files1.txt")
-        self.assertEqual(Test.email,"hola@gmail.com")
-        self.assertEqual(Test.motive,"mot1")
-        self.assertEqual(Test.archivo,"files1.txt")
+        test = Bloque("hola@gmail.com","mot1","files1.txt")
+        self.assertEqual(test.email,"hola@gmail.com")
+        self.assertEqual(test.motive,"mot1")
+        self.assertEqual(test.archivo,"files1.txt")
 
     #Test de la funcion hashing
     def test_BlockHashFunctionWorks(self):
-        Test = Bloque("Buendia@hola.com","mot6","file4.py","2021-04-19 20:48")        
-        self.assertEqual("0c514ca1c4ad18b497e7b0e4094890eb46112979ea7a60b5f922cefc27ab7a7c",Test.hash)
+        test = Bloque("Buendia@hola.com","mot6","file4.py","2021-04-19 20:48")        
+        self.assertEqual("0c514ca1c4ad18b497e7b0e4094890eb46112979ea7a60b5f922cefc27ab7a7c",test.hash)
     
 
     #Test de que dos bloques iguales tienen hash iguales y creacion de una cadena
