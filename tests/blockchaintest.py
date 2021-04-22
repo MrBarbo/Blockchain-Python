@@ -15,24 +15,24 @@ class ChainTest(unittest.TestCase):
     #Test de la creacion del bloque genesis
     def test_BlockGenesisIsCreated(self):
         cadenita=[]
-        Test = BlockManager(cadenita)
-        Test._crear_bloque_genesis_()
+        test = BlockManager(cadenita)
+        test._crear_bloque_genesis_()
         bloq1 = Bloque("","","","")
-        self.assertEqual(bloq1.hash,Test.get_block(0).hash)
-        Test.remove_chain()
+        self.assertEqual(bloq1.hash,test.get_block(0).hash)
+        test.remove_chain()
         
 
     #Test de la funcion "AgregarBloque", serializacion de bloques   
     def test_AgregarBloqueCreatesBlocks(self):
         cadenita = []
-        Test = BlockManager(cadenita)
-        Test._crear_bloque_genesis_()
+        test = BlockManager(cadenita)
+        test._crear_bloque_genesis_()
         b1 = Bloque("hola@out.com","mot1","file1.rar")
         b2 = Bloque("adios@out.com","mot3","file2.zip")
-        Test.agregar_nuevo(b1)
-        Test.agregar_nuevo(b2)
-        self.assertEqual(Test.get_block(1).hash, Test.get_block(2).hashant)
-        Test.remove_chain()
+        test.agregar_nuevo(b1)
+        test.agregar_nuevo(b2)
+        self.assertEqual(test.get_block(1).hash, test.get_block(2).hashant)
+        test.remove_chain()
 
     #Test patron singleton
     def test_Singleton(self):
@@ -50,28 +50,28 @@ class ChainTest(unittest.TestCase):
     #Test de la busqueda por indice (get_block)
     def test_IndexedSearchWorks(self):
         cadenita = []
-        Test = BlockManager(cadenita)
-        Test._crear_bloque_genesis_()
+        test = BlockManager(cadenita)
+        test._crear_bloque_genesis_()
         b1 = Bloque("buendia@in.com","mot65","file7.py")
         b2 = Bloque("adios@out.com","mot3","file2.zip")
-        Test.agregar_nuevo(b1)
-        Test.agregar_nuevo(b2)
-        self.assertEqual("adios@out.com", Test.get_block(2).email)
-        Test.remove_chain()
+        test.agregar_nuevo(b1)
+        test.agregar_nuevo(b2)
+        self.assertEqual("adios@out.com", test.get_block(2).email)
+        test.remove_chain()
 
     #Test de la busqueda por hash
     def test_HashSearchWorks(self):
         cadenita = []
-        Test = BlockManager(cadenita)
-        Test._crear_bloque_genesis_()
+        test = BlockManager(cadenita)
+        test._crear_bloque_genesis_()
         b1 = Bloque("buendia@in.com","mot65","file7.py")
         b2 = Bloque("buenastardes@jd.com","mot8","arch1.zip")
-        Test.agregar_nuevo(b1)
-        Test.agregar_nuevo(b2)
+        test.agregar_nuevo(b1)
+        test.agregar_nuevo(b2)
         bt = Bloque("buendia@in.com","mot65","file7.py")
         ht = bt.hash
-        self.assertEqual(Test.busqueda_hash(ht).hash,ht)
-        Test.remove_chain()
+        self.assertEqual(test.busqueda_hash(ht).hash,ht)
+        test.remove_chain()
 
     #Calculando hashes bloque por bloque verificamos la cadena
     def test_ChainVerification(self):
@@ -91,6 +91,7 @@ class ChainTest(unittest.TestCase):
 
     #Prueba que el archivo de los hash funcione correctamente        
     def test_HashFile(self):
+        
         cadenita = []
         test = BlockManager(cadenita)
         test._crear_bloque_genesis_()
@@ -102,6 +103,46 @@ class ChainTest(unittest.TestCase):
         self.assertEqual(test.cadena[0].hash+test.cadena[1].hash, file1.readline())
         file1.close()
         test.remove_chain()
+    
+    #Prueba de que el metodo chain_verif funciona para caso True
+    def test_ChainVerifMethodWorksForTrueCase(self):
+        cadenita = []
+        test = BlockManager(cadenita)
+        test._crear_bloque_genesis_()
+        for m in range(1,101):
+            btest = Bloque(str(m) + "ia@gmail.com","mot65","file3.exe","2021-04-19 20:48")
+            test.agregar_nuevo(btest)
+        self.assertTrue(test.chain_verif())
+        test.get_block(50).hash = '0978'
+        self.assertFalse(test.chain_verif())
+        test.get_block(10).hashant = '7875'
+        self.assertFalse(test.chain_verif())
+        test.remove_chain()
+
+    #Prueba de que el metodo chain_verif funciona para caso False
+    def test_ChainVerifMethodWorksForFalseCase(self):
+        cadenita = []
+        test = BlockManager(cadenita)
+        test._crear_bloque_genesis_()
+        for m in range(1,101):
+            btest = Bloque(str(m) + "ia@gmail.com","mot65","file3.exe","2021-04-19 20:48")
+            test.agregar_nuevo(btest)
+        test.get_block(50).hash = '0978'
+        self.assertFalse(test.chain_verif())
+        test.remove_chain()
+
+    #Prueba de que el metodo get_last funciona
+    def test_GetLastMethodWorks(self):
+        cadenita = []
+        test = BlockManager(cadenita)
+        test._crear_bloque_genesis_()
+        for m in range(1,10):
+            btest = Bloque(str(m) + "ia@gmail.com","mot65","file3.exe","2021-04-19 20:48")
+            test.agregar_nuevo(btest)
+        test.agregar_nuevo(Bloque("correct@outlook.com","mot1","cr.ry","2021-04-19 20:48"))
+        self.assertEqual("correct@outlook.com",test.get_last().email)
+        test.remove_chain()
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -83,5 +83,19 @@ class BlockManager:
         for i in self.cadena:
             file1.write(i.hash)
         file1.close()
-            
+
+    #Método de verificacion de cadena
+    def chain_verif(self):
+        for block in range(0,len(self.cadena)):
+            if (block>0):
+                if self.cadena[block].hashant!=self.cadena[block-1].hash:
+                    return False
+            bloq = Bloque(self.cadena[block].email, self.cadena[block].motive,self.cadena[block].archivo,self.cadena[block].timestamp)
+            if(bloq.hash!=self.cadena[block].hash):
+                return False
+        return True
+    
+    #Metodo que devuelve ultimo bloque
+    def get_last(self):
+        return self.cadena[len(self.cadena)-1]
 
